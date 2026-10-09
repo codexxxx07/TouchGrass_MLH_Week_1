@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-forest: #2D5A27;
+    --color-forest-dark: #1A3916;
+    --color-moss: #4E7C41;
+    --color-moss-light: #72A063;
+    --color-sage: #8A9A86;
+    --color-sage-light: #E4ECE2;
+    --color-cream: #FAF6EE;
+    --color-sand: #F0EAD9;
+    --color-earth: #8C6239;
+    --color-terracotta: #C85A32;
+    --color-bark: #2C221E;
+    --color-sky: #3A7CA5;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #F8F6F0;
+    color: #1C2818;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Tasteful Depth & Custom Skewmorphism Utilities */
+.nature-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(45, 90, 39, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(29, 57, 25, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  border-radius: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nature-card:hover {
+  box-shadow: 0 12px 30px -4px rgba(29, 57, 25, 0.1), 0 4px 12px -2px rgba(45, 90, 39, 0.06);
+  transform: translateY(-2px);
+}
+
+.nature-card-active {
+  background: #FFFFFF;
+  border: 2px solid #2D5A27;
+  box-shadow: 0 8px 24px -2px rgba(45, 90, 39, 0.12);
+}
+
+.nature-badge {
+  background: #E4ECE2;
+  color: #1D3B19;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.btn-nature-primary {
+  background: linear-gradient(135deg, #2D5A27 0%, #1D3B19 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.875rem;
+  box-shadow: 0 4px 14px rgba(45, 90, 39, 0.25);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-nature-primary:hover {
+  background: linear-gradient(135deg, #376E30 0%, #23471F 100%);
+  box-shadow: 0 6px 20px rgba(45, 90, 39, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-nature-secondary {
+  background: #FAF6EE;
+  color: #2D5A27;
+  border: 1.5px solid #2D5A27;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-nature-secondary:hover {
+  background: #E4ECE2;
+  color: #1D3B19;
+  transform: translateY(-1px);
+}
+
+/* Shimmer animation for AI response loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #FAF6EE 25%, #E4ECE2 50%, #FAF6EE 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8F6F0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C4D3BF;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A9A86;
+}
+
+/* Dedicated Print Styles for Printable Outdoor Adventure Cards */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  
+  nav, footer, .no-print, button, .ai-control-bar {
+    display: none !important;
+  }
+  
+  .printable-adventure {
+    border: 2px solid #2D5A27 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    page-break-inside: avoid;
+  }
+
+  .printable-adventure * {
+    color: #000000 !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+}
