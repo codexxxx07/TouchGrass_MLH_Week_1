@@ -56,7 +56,7 @@ Date: ${new Date().toLocaleDateString()}
     const element = document.createElement("a");
     const file = new Blob([textContent], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = `${adventure.title.toLowerCase().replace(/[^a-z0-0]/g, '_')}_adventure_plan.txt`;
+    element.download = `${adventure.title.toLowerCase().replace(/[^a-z0-9]/g, '_')}_adventure_plan.txt`;
     document.body.appendChild(element);
     element.click();
     element.remove();

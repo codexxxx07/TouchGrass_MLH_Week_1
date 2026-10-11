@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Cpu, Server, WifiOff, CheckCircle2, AlertTriangle, ShieldCheck, RefreshCw } from 'lucide-react';
+import { X, Cpu, Server, WifiOff, CheckCircle2, AlertTriangle, ShieldCheck, RefreshCw, Sparkles } from 'lucide-react';
 import { getAiConfig, saveAiConfig, checkAiProviderHealth, AI_PROVIDERS } from '../services/aiService';
 
 export default function AiConfigModal({ isOpen, onClose }) {
@@ -14,6 +14,15 @@ export default function AiConfigModal({ isOpen, onClose }) {
       runHealthCheck(current);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -33,9 +42,15 @@ export default function AiConfigModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#FAF6EE] border border-[#2D5A27]/20 rounded-2xl max-w-lg w-full p-6 shadow-2xl overflow-hidden relative max-h-[90vh] overflow-y-auto">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-config-title"
+        className="bg-[#FAF6EE] border border-[#2D5A27]/20 rounded-2xl max-w-lg w-full p-6 shadow-2xl overflow-hidden relative max-h-[90vh] overflow-y-auto"
+      >
         <button
           onClick={onClose}
+          aria-label="Close AI settings"
           className="absolute top-4 right-4 text-stone-500 hover:text-stone-800 p-1.5 rounded-full hover:bg-stone-200/60 transition-colors"
         >
           <X className="w-5 h-5" />
@@ -46,7 +61,7 @@ export default function AiConfigModal({ isOpen, onClose }) {
             <Cpu className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#1C2818]">Open-Source AI Settings</h2>
+            <h2 id="ai-config-title" className="text-xl font-bold text-[#1C2818]">Open-Source AI Settings</h2>
             <p className="text-xs text-stone-600">Select model provider & transparent inference engine</p>
           </div>
         </div>
@@ -165,7 +180,59 @@ export default function AiConfigModal({ isOpen, onClose }) {
             )}
           </div>
 
-          {/* Option 3: Remote API */}
+          {/* Option 3: Google Gemini / Gemma */}
+          <div
+            onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.GOOGLE_GEMINI })}
+            className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+              config.provider === AI_PROVIDERS.GOOGLE_GEMINI
+                ? 'bg-white border-[#2D5A27] shadow-sm ring-1 ring-[#2D5A27]'
+                : 'bg-white/50 border-stone-200 hover:border-stone-300'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-5 h-5 text-emerald-700" />
+                <div>
+                  <span className="font-semibold text-sm text-stone-900 block">Google Gemini / Gemma API</span>
+                  <span className="text-xs text-stone-500 block">Fast outdoor inference via Google AI (gemini-3.8-flash, gemma-2-27b)</span>
+                </div>
+              </div>
+              <input
+                type="radio"
+                name="aiProvider"
+                checked={config.provider === AI_PROVIDERS.GOOGLE_GEMINI}
+                onChange={() => {}}
+                className="accent-[#2D5A27]"
+              />
+            </div>
+
+            {config.provider === AI_PROVIDERS.GOOGLE_GEMINI && (
+              <div className="mt-3 pt-3 border-t border-stone-200 space-y-2 text-xs">
+                <div>
+                  <label className="block text-stone-600 font-medium mb-1">Model Name</label>
+                  <input
+                    type="text"
+                    value={config.geminiModel || 'gemini-3.8-flash'}
+                    onChange={(e) => setConfig({ ...config, geminiModel: e.target.value })}
+                    placeholder="gemini-3.8-flash or gemma-4-26b-a4b-it"
+                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-600 font-medium mb-1">API Key (Google AI Studio)</label>
+                  <input
+                    type="password"
+                    value={config.geminiApiKey || ''}
+                    onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
+                    placeholder="AQ... or AIza..."
+                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Option 4: Remote Open-Weight API */}
           <div
             onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.REMOTE_API })}
             className={`p-3.5 rounded-xl border cursor-pointer transition-all ${

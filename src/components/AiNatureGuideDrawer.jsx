@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, X, Send, Bot, User, Cpu, ShieldAlert, RefreshCw, Feather, Leaf, Clock, Sprout } from 'lucide-react';
 import { askNatureGuide, getAiConfig, AI_PROVIDERS } from '../services/aiService';
 
@@ -12,6 +12,15 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -63,7 +72,12 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-[#FAF6EE] border-l border-[#2D5A27]/20 w-full max-w-md h-full flex flex-col shadow-2xl relative">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nature-guide-title"
+        className="bg-[#FAF6EE] border-l border-[#2D5A27]/20 w-full max-w-md h-full flex flex-col shadow-2xl relative"
+      >
         
         {/* Header */}
         <div className="p-4 bg-[#2D5A27] text-white flex items-center justify-between border-b border-emerald-800">
@@ -72,7 +86,7 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base flex items-center gap-1.5 text-white">
+              <h3 id="nature-guide-title" className="font-bold text-base flex items-center gap-1.5 text-white">
                 AI Nature Guide 🌿
               </h3>
               <p className="text-[11px] text-emerald-200">Powered by Open-Weight Models & Nature Engine</p>
@@ -80,6 +94,7 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close AI Nature Guide"
             className="p-1.5 text-emerald-200 hover:text-white rounded-lg hover:bg-emerald-700/60 transition-colors"
           >
             <X className="w-5 h-5" />

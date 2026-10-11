@@ -12,38 +12,103 @@ const CONFIG_KEY = 'touch_grass_ai_config_v1';
 export const AI_PROVIDERS = {
   OFFLINE_FALLBACK: 'offline_fallback',
   LOCAL_OLLAMA: 'local_ollama',
+  GOOGLE_GEMINI: 'google_gemini',
   REMOTE_API: 'remote_api'
 };
 
-const getEnvApiKey = () => {
-  try {
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      return import.meta.env.VITE_GEMMA_API_KEY || import.meta.env.GEMMA_API_KEY || '';
-    }
-  } catch (e) {}
+/**
+ * SECURITY: Secret API keys must NEVER live in client-side code.
+ * Variables prefixed with VITE_ are inlined into the production bundle and are
+ * readable by anyone. This module therefore only reads a *non-secret* proxy URL
+ * from the environment. When configured, requests are forwarded to a
+ * server-side function (see /api/ai-proxy.js) that injects the real credential.
+ * When it is not configured, users may still supply their own key through the
+ * AI Settings modal (kept only in their browser's localStorage).
+ */
+const getProxyUrl = () => {
+  // IMPORTANT: access the variable statically (import.meta.env.VITE_...).
+  // Using `import.meta.env` as an object (or optional chaining) makes Vite
+  // inline the ENTIRE env object into the bundle, exposing every VITE_ var.
+  const url = import.meta.env.VITE_AI_PROXY_URL;
+  if (typeof url === 'string' && url.trim()) {
+    return url.trim().replace(/\/+$/, '');
+  }
   return '';
 };
 
+export const AI_PROXY_URL = getProxyUrl();
+
+// Clean raw LLM JSON text by stripping markdown fences
+export const cleanJson = (raw) => {
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  const stripped = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  return JSON.parse(stripped);
+};
+
 export const DEFAULT_AI_CONFIG = {
-  provider: AI_PROVIDERS.OFFLINE_FALLBACK, // Default to lightweight, instant offline engine
+  provider: AI_PROVIDERS.OFFLINE_FALLBACK,
   ollamaEndpoint: 'http://localhost:11434',
   ollamaModel: 'llama3.2',
+  geminiModel: 'gemini-3.8-flash',
+  geminiApiKey: '',
   remoteEndpoint: 'https://api.groq.com/openai/v1',
   remoteModel: 'llama-3.1-8b-instant',
-  remoteApiKey: getEnvApiKey()
+  remoteApiKey: ''
+};
+
+/**
+ * Request helpers. When AI_PROXY_URL is set, the request is sent through the
+ * server-side proxy which owns the credential. Otherwise the browser calls the
+ * provider directly using a key the user entered locally.
+ */
+const postGemini = ({ apiKey, model, body }) => {
+  const url = AI_PROXY_URL
+    ? AI_PROXY_URL
+    : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const payload = AI_PROXY_URL ? { provider: 'gemini', model, body } : body;
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+};
+
+const postOpenAiChat = ({ apiKey, endpoint, body }) => {
+  const base = (endpoint || '').replace(/\/+$/, '');
+  const url = AI_PROXY_URL ? AI_PROXY_URL : `${base}/chat/completions`;
+  const payload = AI_PROXY_URL ? { provider: 'openai', endpoint: base, body } : body;
+  const headers = { 'Content-Type': 'application/json' };
+  if (!AI_PROXY_URL && apiKey) headers.Authorization = `Bearer ${apiKey}`;
+  return fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
+};
+
+const getGeminiModels = ({ apiKey }) => {
+  const url = AI_PROXY_URL
+    ? `${AI_PROXY_URL}?provider=gemini`
+    : `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+  return fetch(url);
+};
+
+const getOpenAiModels = ({ apiKey, endpoint }) => {
+  const base = (endpoint || '').replace(/\/+$/, '');
+  const url = AI_PROXY_URL ? `${AI_PROXY_URL}?provider=openai&endpoint=${encodeURIComponent(base)}` : `${base}/models`;
+  const headers = {};
+  if (!AI_PROXY_URL && apiKey) headers.Authorization = `Bearer ${apiKey}`;
+  return fetch(url, { headers });
 };
 
 export const getAiConfig = () => {
   try {
     const saved = localStorage.getItem(CONFIG_KEY);
-    const envKey = getEnvApiKey();
     if (!saved) {
-      return { ...DEFAULT_AI_CONFIG, remoteApiKey: envKey };
+      return { ...DEFAULT_AI_CONFIG };
     }
     const parsed = JSON.parse(saved);
-    if (!parsed.remoteApiKey && envKey) {
-      parsed.remoteApiKey = envKey;
-    }
     return { ...DEFAULT_AI_CONFIG, ...parsed };
   } catch (e) {
     return DEFAULT_AI_CONFIG;
@@ -55,11 +120,32 @@ export const saveAiConfig = (config) => {
 };
 
 /**
- * Test connectivity to Ollama or Remote Endpoint
+ * Test connectivity to Ollama, Google Gemini, or Remote Endpoint
  */
 export const checkAiProviderHealth = async (config = getAiConfig()) => {
   if (config.provider === AI_PROVIDERS.OFFLINE_FALLBACK) {
     return { available: true, message: 'Offline Nature Engine is active and ready (0ms latency).' };
+  }
+
+  if (config.provider === AI_PROVIDERS.GOOGLE_GEMINI) {
+    const keyToTest = config.geminiApiKey || config.remoteApiKey;
+    if (!keyToTest && !AI_PROXY_URL) {
+      return { available: false, message: 'Google Gemini / Gemma API key is missing. Enter a key or configure a secure AI proxy.' };
+    }
+    try {
+      const res = await getGeminiModels({ apiKey: keyToTest });
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          available: true,
+          message: `Connected to Google Gemini / Gemma API! (${data.models ? data.models.length : '50+'} models available).`
+        };
+      }
+      const errData = await res.json().catch(() => ({}));
+      return { available: false, message: `Google API returned status ${res.status}: ${errData.error?.message || 'Authentication error'}` };
+    } catch (e) {
+      return { available: false, message: `Google Gemini endpoint connection failed: ${e.message}` };
+    }
   }
 
   if (config.provider === AI_PROVIDERS.LOCAL_OLLAMA) {
@@ -68,7 +154,6 @@ export const checkAiProviderHealth = async (config = getAiConfig()) => {
       if (res.ok) {
         const data = await res.json();
         const models = data.models || [];
-        const hasModel = models.some(m => m.name.includes(config.ollamaModel));
         return {
           available: true,
           message: `Connected to Local Ollama! ${models.length} model(s) available.`,
@@ -85,13 +170,11 @@ export const checkAiProviderHealth = async (config = getAiConfig()) => {
   }
 
   if (config.provider === AI_PROVIDERS.REMOTE_API) {
-    if (!config.remoteApiKey && !config.remoteEndpoint.includes('localhost')) {
-      return { available: false, message: 'Remote Open-Weight API key is missing. Please enter an API key.' };
+    if (!config.remoteApiKey && !AI_PROXY_URL && !config.remoteEndpoint.includes('localhost')) {
+      return { available: false, message: 'Remote Open-Weight API key is missing. Please enter an API key or configure a secure AI proxy.' };
     }
     try {
-      const res = await fetch(`${config.remoteEndpoint}/models`, {
-        headers: { 'Authorization': `Bearer ${config.remoteApiKey}` }
-      });
+      const res = await getOpenAiModels({ apiKey: config.remoteApiKey, endpoint: config.remoteEndpoint });
       if (res.ok) {
         return { available: true, message: 'Connected to Remote Open-Weight Inference API.' };
       }
@@ -133,6 +216,41 @@ Output ONLY valid JSON matching this schema:
   "completionGoal": "string"
 }`;
 
+  // Attempt Google Gemini / Gemma API
+  if (config.provider === AI_PROVIDERS.GOOGLE_GEMINI) {
+    const keyToUse = config.geminiApiKey || config.remoteApiKey;
+    const modelToUse = config.geminiModel || 'gemini-3.8-flash';
+    try {
+      const response = await postGemini({
+        apiKey: keyToUse,
+        model: modelToUse,
+        body: {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: 'application/json'
+          }
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const parsed = cleanJson(rawText);
+        return {
+          adventure: formatAdventureOutput(parsed, userInputs),
+          meta: {
+            source: AI_PROVIDERS.GOOGLE_GEMINI,
+            modelName: `Google Gemini (${modelToUse})`,
+            latencyMs: Date.now() - startTime,
+            disclosureNotice: `Generated live using open Google Gemini model: ${modelToUse}.`
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('Google Gemini generation failed, seamlessly falling back to rule engine:', e);
+    }
+  }
+
   // Attempt Local Ollama
   if (config.provider === AI_PROVIDERS.LOCAL_OLLAMA) {
     try {
@@ -149,7 +267,7 @@ Output ONLY valid JSON matching this schema:
 
       if (response.ok) {
         const data = await response.json();
-        const parsed = JSON.parse(data.response);
+        const parsed = cleanJson(data.response);
         return {
           adventure: formatAdventureOutput(parsed, userInputs),
           meta: {
@@ -168,23 +286,20 @@ Output ONLY valid JSON matching this schema:
   // Attempt Remote Open-Weight API
   if (config.provider === AI_PROVIDERS.REMOTE_API) {
     try {
-      const response = await fetch(`${config.remoteEndpoint}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.remoteApiKey}`
-        },
-        body: JSON.stringify({
+      const response = await postOpenAiChat({
+        apiKey: config.remoteApiKey,
+        endpoint: config.remoteEndpoint,
+        body: {
           model: config.remoteModel,
           messages: [{ role: 'user', content: prompt }],
           response_format: { type: 'json_object' }
-        })
+        }
       });
 
       if (response.ok) {
         const data = await response.json();
         const content = data.choices[0].message.content;
-        const parsed = JSON.parse(content);
+        const parsed = cleanJson(content);
         return {
           adventure: formatAdventureOutput(parsed, userInputs),
           meta: {
@@ -228,6 +343,46 @@ Strict Rules:
 3. For foraging/plants: NEVER state a wild plant or mushroom is safe to eat. Always include a safety warning.
 4. Keep answers concise, actionable, and formatted in clear steps or bullet points.`;
 
+  // Attempt Google Gemini / Gemma
+  if (config.provider === AI_PROVIDERS.GOOGLE_GEMINI) {
+    const keyToUse = config.geminiApiKey || config.remoteApiKey;
+    const modelToUse = config.geminiModel || 'gemini-3.8-flash';
+    try {
+      const response = await postGemini({
+        apiKey: keyToUse,
+        model: modelToUse,
+        body: {
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [
+            ...chatHistory.map(h => ({
+              role: h.role === 'assistant' ? 'model' : 'user',
+              parts: [{ text: h.content }]
+            })),
+            { role: 'user', parts: [{ text: userMessage }] }
+          ]
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          return {
+            text: text.trim(),
+            meta: {
+              source: AI_PROVIDERS.GOOGLE_GEMINI,
+              modelName: `Google Gemini (${modelToUse})`,
+              latencyMs: Date.now() - startTime,
+              disclosureNotice: `Response generated live via Google Gemini (${modelToUse}).`
+            }
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Google Gemini chat failed, using nature rule fallback engine:', e);
+    }
+  }
+
   if (config.provider === AI_PROVIDERS.LOCAL_OLLAMA) {
     try {
       const response = await fetch(`${config.ollamaEndpoint}/api/chat`, {
@@ -263,20 +418,17 @@ Strict Rules:
 
   if (config.provider === AI_PROVIDERS.REMOTE_API) {
     try {
-      const response = await fetch(`${config.remoteEndpoint}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.remoteApiKey}`
-        },
-        body: JSON.stringify({
+      const response = await postOpenAiChat({
+        apiKey: config.remoteApiKey,
+        endpoint: config.remoteEndpoint,
+        body: {
           model: config.remoteModel,
           messages: [
             { role: 'system', content: systemPrompt },
             ...chatHistory,
             { role: 'user', content: userMessage }
           ]
-        })
+        }
       });
 
       if (response.ok) {

@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
 @layer base {
   :root {
     --color-forest: #2D5A27;
@@ -110,6 +115,36 @@
   background: linear-gradient(90deg, #FAF6EE 25%, #E4ECE2 50%, #FAF6EE 75%);
   background-size: 200% 100%;
   animation: shimmer 1.8s infinite;
+}
+
+/* Shared entrance animation used across menus, drawers and modals */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-fadeIn,
+  .animate-shimmer,
+  .animate-spin,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
+  }
 }
 
 /* Custom Scrollbar */
