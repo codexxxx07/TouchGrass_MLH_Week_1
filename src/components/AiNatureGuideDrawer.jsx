@@ -71,12 +71,12 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex justify-end bg-[#2C221E]/50 backdrop-blur-xs animate-fadeIn">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="nature-guide-title"
-        className="bg-[#FAF6EE] border-l border-[#2D5A27]/20 w-full max-w-md h-full flex flex-col shadow-2xl relative"
+        className="bg-[#FAF6EE] border-l border-[#2D5A27]/15 w-full max-w-md h-full flex flex-col shadow-2xl relative"
       >
         
         {/* Header */}
@@ -120,7 +120,7 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
                 className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
                   msg.sender === 'user'
                     ? 'bg-[#2D5A27] text-white rounded-br-none shadow-sm'
-                    : 'bg-white border border-stone-200 text-stone-900 rounded-bl-none shadow-sm'
+                    : 'bg-white border border-[#1E2A1A]/12 text-[#3A4038] rounded-bl-none shadow-sm'
                 }`}
               >
                 <div className="whitespace-pre-wrap">{msg.text}</div>
@@ -137,7 +137,7 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
           ))}
 
           {loading && (
-            <div className="flex items-center gap-2 text-xs text-stone-600 p-3 bg-white/70 rounded-xl border border-stone-200 animate-pulse">
+            <div className="flex items-center gap-2 text-xs text-[#4C5249] p-3 bg-white/80 rounded-xl border border-[#1E2A1A]/10 animate-pulse">
               <RefreshCw className="w-4 h-4 animate-spin text-[#2D5A27]" />
               <span>Nature Guide is formulating real-world advice...</span>
             </div>
@@ -145,12 +145,12 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
         </div>
 
         {/* Sample Prompt Chips */}
-        <div className="px-4 py-2 bg-stone-100/70 border-t border-stone-200 flex flex-wrap gap-1.5">
+        <div className="px-4 py-2.5 bg-[#F2EEE3] border-t border-[#1E2A1A]/10 flex flex-wrap gap-1.5">
           {samplePrompts.map((sp, i) => (
             <button
               key={i}
               onClick={() => handleSend(sp.prompt)}
-              className="text-[11px] bg-white border border-stone-300 hover:border-[#2D5A27] hover:text-[#2D5A27] text-stone-700 px-2.5 py-1 rounded-full font-medium transition-colors"
+              className="text-[11px] bg-white border border-[#1E2A1A]/15 hover:border-[#2D5A27] hover:text-[#2D5A27] text-[#4C5249] px-2.5 py-1 rounded-full font-medium transition-colors"
             >
               {sp.label}
             </button>
@@ -158,14 +158,14 @@ export default function AiNatureGuideDrawer({ isOpen, onClose }) {
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 bg-white border-t border-stone-200 flex items-center gap-2">
+        <div className="p-3 bg-white border-t border-[#1E2A1A]/10 flex items-center gap-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Ask AI Nature Guide (e.g. 30 mins outside)..."
-            className="flex-1 bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-[#2D5A27]"
+            className="nature-input flex-1"
           />
           <button
             onClick={() => handleSend()}

@@ -41,17 +41,17 @@ export default function AiConfigModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2C221E]/60 backdrop-blur-sm animate-fadeIn">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="ai-config-title"
-        className="bg-[#FAF6EE] border border-[#2D5A27]/20 rounded-2xl max-w-lg w-full p-6 shadow-2xl overflow-hidden relative max-h-[90vh] overflow-y-auto"
-      >
+className="bg-[#FAF6EE] border border-[#2D5A27]/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl overflow-hidden relative max-h-[90vh] overflow-y-auto"
+        >
         <button
           onClick={onClose}
           aria-label="Close AI settings"
-          className="absolute top-4 right-4 text-stone-500 hover:text-stone-800 p-1.5 rounded-full hover:bg-stone-200/60 transition-colors"
+          className="absolute top-4 right-4 text-[#7C8377] hover:text-[#1E2A1A] p-1.5 rounded-full hover:bg-[#EDE9DE] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -61,12 +61,12 @@ export default function AiConfigModal({ isOpen, onClose }) {
             <Cpu className="w-6 h-6" />
           </div>
           <div>
-            <h2 id="ai-config-title" className="text-xl font-bold text-[#1C2818]">Open-Source AI Settings</h2>
-            <p className="text-xs text-stone-600">Select model provider & transparent inference engine</p>
+            <h2 id="ai-config-title" className="text-xl font-bold text-[#1E2A1A]">Open-Source AI Settings</h2>
+            <p className="text-[13px] text-[#7C8377]">Select model provider &amp; transparent inference engine</p>
           </div>
         </div>
 
-        <div className="bg-[#E4ECE2]/60 p-3 rounded-xl mb-5 flex items-start gap-2 text-xs text-[#1D3B19]">
+        <div className="bg-[#E9F0E4] border border-[#2D5A27]/10 p-3.5 rounded-xl mb-5 flex items-start gap-2 text-xs text-[#23421C]">
           <ShieldCheck className="w-4 h-4 shrink-0 text-[#2D5A27] mt-0.5" />
           <span>
             <strong>Privacy & Transparency:</strong> Touch Grass never tracks user activity or exposes private API keys. You choose between running 100% locally via Ollama, open-weight remote APIs, or the built-in offline engine.
@@ -75,7 +75,7 @@ export default function AiConfigModal({ isOpen, onClose }) {
 
         {/* Health Check Status */}
         {isTesting && (
-          <div className="p-3 bg-stone-100 rounded-xl mb-4 text-xs flex items-center gap-2 text-stone-600">
+          <div className="p-3 bg-[#EDE9DE] rounded-xl mb-4 text-xs flex items-center gap-2 text-[#4C5249]">
             <RefreshCw className="w-4 h-4 animate-spin text-[#2D5A27]" />
             <span>Testing provider connection...</span>
           </div>
@@ -99,15 +99,15 @@ export default function AiConfigModal({ isOpen, onClose }) {
 
         {/* Provider Radio Cards */}
         <div className="space-y-3 mb-5">
-          <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block">Inference Engine</label>
+          <span className="block text-[11px] font-bold uppercase tracking-wider text-[#7C8377]">Inference engine</span>
           
           {/* Option 1: Offline Engine */}
           <div
             onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.OFFLINE_FALLBACK })}
-            className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
               config.provider === AI_PROVIDERS.OFFLINE_FALLBACK
                 ? 'bg-white border-[#2D5A27] shadow-sm ring-1 ring-[#2D5A27]'
-                : 'bg-white/50 border-stone-200 hover:border-stone-300'
+                : 'bg-[#FAF6EE]/70 border-[#1E2A1A]/12 hover:border-[#1E2A1A]/30'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -131,10 +131,10 @@ export default function AiConfigModal({ isOpen, onClose }) {
           {/* Option 2: Local Ollama */}
           <div
             onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.LOCAL_OLLAMA })}
-            className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
               config.provider === AI_PROVIDERS.LOCAL_OLLAMA
                 ? 'bg-white border-[#2D5A27] shadow-sm ring-1 ring-[#2D5A27]'
-                : 'bg-white/50 border-stone-200 hover:border-stone-300'
+                : 'bg-[#FAF6EE]/70 border-[#1E2A1A]/12 hover:border-[#1E2A1A]/30'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
@@ -157,23 +157,23 @@ export default function AiConfigModal({ isOpen, onClose }) {
             {config.provider === AI_PROVIDERS.LOCAL_OLLAMA && (
               <div className="mt-3 pt-3 border-t border-stone-200 space-y-2 text-xs">
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Ollama Base URL</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">Ollama Base URL</label>
                   <input
                     type="text"
                     value={config.ollamaEndpoint}
                     onChange={(e) => setConfig({ ...config, ollamaEndpoint: e.target.value })}
                     placeholder="http://localhost:11434"
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Model Name</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">Model Name</label>
                   <input
                     type="text"
                     value={config.ollamaModel}
                     onChange={(e) => setConfig({ ...config, ollamaModel: e.target.value })}
                     placeholder="llama3.2 or phi3"
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
               </div>
@@ -183,10 +183,10 @@ export default function AiConfigModal({ isOpen, onClose }) {
           {/* Option 3: Google Gemini / Gemma */}
           <div
             onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.GOOGLE_GEMINI })}
-            className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
               config.provider === AI_PROVIDERS.GOOGLE_GEMINI
                 ? 'bg-white border-[#2D5A27] shadow-sm ring-1 ring-[#2D5A27]'
-                : 'bg-white/50 border-stone-200 hover:border-stone-300'
+                : 'bg-[#FAF6EE]/70 border-[#1E2A1A]/12 hover:border-[#1E2A1A]/30'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
@@ -209,23 +209,23 @@ export default function AiConfigModal({ isOpen, onClose }) {
             {config.provider === AI_PROVIDERS.GOOGLE_GEMINI && (
               <div className="mt-3 pt-3 border-t border-stone-200 space-y-2 text-xs">
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Model Name</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">Model Name</label>
                   <input
                     type="text"
                     value={config.geminiModel || 'gemini-3.8-flash'}
                     onChange={(e) => setConfig({ ...config, geminiModel: e.target.value })}
                     placeholder="gemini-3.8-flash or gemma-4-26b-a4b-it"
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">API Key (Google AI Studio)</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">API Key (Google AI Studio)</label>
                   <input
                     type="password"
                     value={config.geminiApiKey || ''}
                     onChange={(e) => setConfig({ ...config, geminiApiKey: e.target.value })}
                     placeholder="AQ... or AIza..."
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
               </div>
@@ -235,10 +235,10 @@ export default function AiConfigModal({ isOpen, onClose }) {
           {/* Option 4: Remote Open-Weight API */}
           <div
             onClick={() => setConfig({ ...config, provider: AI_PROVIDERS.REMOTE_API })}
-            className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+            className={`p-4 rounded-xl border cursor-pointer transition-all ${
               config.provider === AI_PROVIDERS.REMOTE_API
                 ? 'bg-white border-[#2D5A27] shadow-sm ring-1 ring-[#2D5A27]'
-                : 'bg-white/50 border-stone-200 hover:border-stone-300'
+                : 'bg-[#FAF6EE]/70 border-[#1E2A1A]/12 hover:border-[#1E2A1A]/30'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
@@ -261,33 +261,33 @@ export default function AiConfigModal({ isOpen, onClose }) {
             {config.provider === AI_PROVIDERS.REMOTE_API && (
               <div className="mt-3 pt-3 border-t border-stone-200 space-y-2 text-xs">
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">API Endpoint URL</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">API Endpoint URL</label>
                   <input
                     type="text"
                     value={config.remoteEndpoint}
                     onChange={(e) => setConfig({ ...config, remoteEndpoint: e.target.value })}
                     placeholder="https://api.groq.com/openai/v1"
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Model Name</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">Model Name</label>
                   <input
                     type="text"
                     value={config.remoteModel}
                     onChange={(e) => setConfig({ ...config, remoteModel: e.target.value })}
                     placeholder="llama-3.1-8b-instant"
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">API Key (Optional / Private local storage)</label>
+                  <label className="block text-[13px] font-medium text-[#4C5249] mb-1">API Key (Optional / Private local storage)</label>
                   <input
                     type="password"
                     value={config.remoteApiKey}
                     onChange={(e) => setConfig({ ...config, remoteApiKey: e.target.value })}
                     placeholder="gsk_..."
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#2D5A27]"
+                    className="nature-input"
                   />
                 </div>
               </div>
@@ -299,7 +299,7 @@ export default function AiConfigModal({ isOpen, onClose }) {
         <div className="flex items-center justify-between pt-3 border-t border-stone-200">
           <button
             onClick={() => runHealthCheck(config)}
-            className="px-3 py-2 text-xs font-semibold text-stone-700 bg-stone-200/80 hover:bg-stone-300 rounded-lg flex items-center gap-1.5 transition-colors"
+            className="px-3 py-2 text-xs font-semibold text-[#4C5249] bg-[#EDE9DE] hover:bg-[#E4E0D4] rounded-lg flex items-center gap-1.5 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Test Connection</span>
@@ -307,7 +307,7 @@ export default function AiConfigModal({ isOpen, onClose }) {
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-stone-600 hover:text-stone-800 transition-colors"
+              className="px-4 py-2 text-xs font-semibold text-[#7C8377] hover:text-[#1E2A1A] transition-colors"
             >
               Cancel
             </button>

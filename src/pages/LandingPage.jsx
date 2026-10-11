@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Compass, Target, BookOpen, ShieldCheck, Cpu, ArrowRight, Printer, CheckCircle2, Footprints, Leaf, Clock, Sun, Feather, Heart, WifiOff } from 'lucide-react';
-import { INITIAL_ADVENTURES } from '../data/initialAdventures';
+import { Sparkles, Target, BookOpen, ShieldCheck, Cpu, ArrowRight, Printer, CheckCircle2, Leaf, WifiOff } from 'lucide-react';
 import { INITIAL_MISSIONS } from '../data/initialMissions';
 import PrintableAdventureModal from '../components/PrintableAdventureModal';
 
@@ -24,323 +23,337 @@ export default function LandingPage({ onOpenNatureGuide }) {
     setIsPrintModalOpen(true);
   };
 
-  return (
-    <div className="space-y-16 pb-12 font-body text-[#1C2818]">
-      
-      {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-8 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-[#E4ECE2]/50 to-transparent -z-10 rounded-3xl" />
-        
-        <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 bg-[#E4ECE2] text-[#1D3B19] px-4 py-1.5 rounded-full text-xs font-bold border border-[#2D5A27]/20 shadow-sm animate-bounce">
-            <Leaf className="w-3.5 h-3.5 text-[#2D5A27]" />
-            <span>Open-Source AI Outdoor Exploration Platform</span>
-          </div>
+  const steps = [
+    {
+      title: 'Plan your adventure',
+      copy: 'Pick how much time you have and what you feel like doing. The open-source engine shapes it into a micro-mission tailored to your place and pace.'
+    },
+    {
+      title: 'Print & unplug',
+      copy: 'Print or download the mission card — then leave your phone inside. Step out the door and give the real world your full attention.'
+    },
+    {
+      title: 'Log it afterwards',
+      copy: 'Return refreshed, mark the mission complete, and save your notes privately in your nature journal. No account, no uploads.'
+    }
+  ];
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-[#1C2818] tracking-tight leading-tight">
-            Less Scrolling. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2D5A27] via-[#4E7C41] to-[#8C6239]">
-              More Exploring.
-            </span>
+  const principles = [
+    {
+      icon: ShieldCheck,
+      title: 'Your data stays on device',
+      copy: 'Journal entries, outdoor stats, and saved plans are stored locally in your browser. We never collect or sell your personal activity.'
+    },
+    {
+      icon: Cpu,
+      title: 'You always know the engine',
+      copy: 'Every response carries a disclosure badge showing whether it came from local Ollama, an open API, or the offline rule fallback.'
+    },
+    {
+      icon: WifiOff,
+      title: 'Works without connectivity',
+      copy: 'Basic missions, saved plans, and journal entries all remain accessible offline — no active server connection required.'
+    }
+  ];
+
+  return (
+    <div className="pb-20 font-body">
+      {/* 1. Hero */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-20 pb-16 sm:pb-20">
+        <div className="max-w-2xl">
+          <span className="eyebrow-pill">
+            <Leaf className="text-[#2D5A27]" />
+            Open-source AI outdoor platform
+          </span>
+
+          <h1 className="mt-7 text-[2.6rem] leading-[1.04] sm:text-6xl font-extrabold tracking-tight text-[#1E2A1A]">
+            Less scrolling.
+            <br />
+            <span className="text-[#2D5A27]">More exploring.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-stone-700 leading-relaxed font-normal max-w-2xl mx-auto">
-            Turn your free time into real-world adventures with personalized AI-powered nature missions. Discover more outside, one small adventure at a time.
+          <p className="lede mt-6 max-w-xl">
+            Turn free minutes into real-world adventures. Touch Grass turns your available time into
+            a personalized outdoor mission you can print and take outside — phone-free.
           </p>
 
-          {/* Primary & Secondary CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <Link to="/planner" className="btn-nature-primary text-base py-3.5 px-7 w-full sm:w-auto">
-              <Sparkles className="w-5 h-5 text-emerald-300" />
+          <div className="mt-9 flex flex-col sm:flex-row gap-3">
+            <Link to="/planner" className="btn-nature-primary text-base py-3.5 px-7">
+              <Sparkles className="w-4.5 h-4.5 text-emerald-300" />
               <span>Start an Adventure</span>
             </Link>
-            <Link to="/missions" className="btn-nature-secondary text-base py-3.5 px-7 w-full sm:w-auto">
-              <Target className="w-5 h-5 text-[#2D5A27]" />
-              <span>Explore Nature Missions</span>
+            <Link to="/missions" className="btn-nature-secondary text-base py-3.5 px-7">
+              <Target className="w-4.5 h-4.5 text-[#2D5A27]" />
+              <span>Browse Nature Missions</span>
             </Link>
           </div>
 
-          <div className="pt-4 flex items-center justify-center gap-6 text-xs text-stone-600 font-semibold">
+          <div className="mt-9 flex flex-wrap gap-x-8 gap-y-2.5 text-[13px] font-medium text-[#4C5249]">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#2D5A27]" /> 100% Screen-Free Real World Focus
+              <CheckCircle2 className="w-4 h-4 text-[#2D5A27]" /> Screen-free, real-world focus
             </span>
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-[#2D5A27]" /> Privacy-First Browser Storage
+              <ShieldCheck className="w-4 h-4 text-[#2D5A27]" /> Privacy-first local storage
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Cpu className="w-4 h-4 text-[#2D5A27]" /> Transparent open-source AI
             </span>
           </div>
         </div>
       </section>
 
       {/* 2. Interactive Preview of Adventure Planner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="nature-card p-6 sm:p-8 bg-gradient-to-br from-white to-[#FAF6EE] border border-[#2D5A27]/20 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
-                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                <span>Instant Adventure Planner</span>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="nature-panel overflow-hidden grid lg:grid-cols-2">
+          <div className="p-8 sm:p-10 lg:p-12 border-b lg:border-b-0 lg:border-r border-[#1E2A1A]/10 flex flex-col gap-6">
+            <span className="eyebrow">
+              <Sparkles /> Adventure planner
+            </span>
+            <h2 className="text-2xl sm:text-[1.75rem] font-bold leading-snug text-[#1E2A1A]">
+              Generate a personalized outdoor plan in seconds.
+            </h2>
+            <p className="prose-nature">
+              Tell the open-source engine how much time you have and what you feel like doing.
+              You get a structured, printable mission card, ready in one tap.
+            </p>
+
+            <ul className="space-y-2.5 text-sm text-[#4C5249]">
+              {[
+                'Step-by-step outdoor missions',
+                'Nature observation tasks',
+                'Required gear checklist',
+                'Clear real-world completion goal'
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#2D5A27] shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto pt-2 flex items-center gap-2.5 text-[13px] text-[#4C5249]">
+              <span className="p-1.5 rounded-lg bg-[#E9F0E4] text-[#2D5A27]">
+                <Printer className="w-4 h-4" />
+              </span>
+              Printable or TXT download — so you can leave your phone inside.
+            </div>
+          </div>
+
+          <div className="p-8 sm:p-10 lg:p-12 bg-[#FAF6EE]/70">
+            <form onSubmit={handleQuickPlannerLaunch} className="space-y-5">
+              <div>
+                <label className="field-label" htmlFor="lp-time">Available time</label>
+                <select
+                  id="lp-time"
+                  value={previewTime}
+                  onChange={(e) => setPreviewTime(e.target.value)}
+                  className="nature-input"
+                >
+                  <option value="15 minutes">15 Minutes Quick Reset</option>
+                  <option value="30 minutes">30 Minutes Micro Exploration</option>
+                  <option value="45 minutes">45 Minutes Deep Nature Walk</option>
+                  <option value="60 minutes">60 Minutes Full Expedition</option>
+                </select>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1C2818]">
-                Generate your personalized outdoor plan in seconds.
-              </h2>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                Tell our open-source AI engine how much time you have and what you feel like doing. Get step-by-step challenges and safety tips ready to print.
+
+              <div>
+                <label className="field-label" htmlFor="lp-activity">Preferred activity</label>
+                <select
+                  id="lp-activity"
+                  value={previewActivity}
+                  onChange={(e) => setPreviewActivity(e.target.value)}
+                  className="nature-input"
+                >
+                  <option value="Nature Walk">Nature Observation Walk</option>
+                  <option value="Bird Watching">Bird &amp; Wildlife Spotting</option>
+                  <option value="Micro Gardening">Balcony / Micro Gardening</option>
+                  <option value="Photography">Nature Texture Photography</option>
+                </select>
+              </div>
+
+              <p className="pt-1 text-xs text-[#7C8377]">
+                Your choices are sent straight to the full planner — nothing is generated until you confirm there.
               </p>
 
-              <div className="p-3 bg-[#E4ECE2]/60 rounded-xl text-xs text-[#1D3B19] flex items-center gap-2">
-                <Printer className="w-4 h-4 shrink-0 text-[#2D5A27]" />
-                <span>Printable or TXT downloadable so you can leave your phone inside!</span>
-              </div>
-            </div>
-
-            {/* Interactive Form Widget */}
-            <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-stone-200 shadow-md">
-              <form onSubmit={handleQuickPlannerLaunch} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      ⏱️ Available Time
-                    </label>
-                    <select
-                      value={previewTime}
-                      onChange={(e) => setPreviewTime(e.target.value)}
-                      className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 font-semibold focus:border-[#2D5A27]"
-                    >
-                      <option value="15 minutes">15 Minutes Quick Reset</option>
-                      <option value="30 minutes">30 Minutes Micro Exploration</option>
-                      <option value="45 minutes">45 Minutes Deep Nature Walk</option>
-                      <option value="60 minutes">60 Minutes Full Expedition</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                      🌿 Preferred Activity
-                    </label>
-                    <select
-                      value={previewActivity}
-                      onChange={(e) => setPreviewActivity(e.target.value)}
-                      className="w-full p-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 font-semibold focus:border-[#2D5A27]"
-                    >
-                      <option value="Nature Walk">Nature Observation Walk</option>
-                      <option value="Bird Watching">Bird & Wildlife Spotting</option>
-                      <option value="Micro Gardening">Balcony / Micro Gardening</option>
-                      <option value="Photography">Nature Texture Photography</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-[#FAF6EE] rounded-xl border border-stone-200 text-xs text-stone-700">
-                  <p className="font-semibold text-[#1D3B19] mb-1">Generated Output Includes:</p>
-                  <div className="grid grid-cols-2 gap-1 text-[11px] text-stone-600">
-                    <span>✓ Step-by-step outdoor missions</span>
-                    <span>✓ Nature observation tasks</span>
-                    <span>✓ Required gear checklist</span>
-                    <span>✓ Clear real-world goal</span>
-                  </div>
-                </div>
-
-                <button type="submit" className="btn-nature-primary w-full text-sm py-3">
-                  <span>Launch AI Adventure Planner</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
-            </div>
-
+              <button type="submit" className="btn-nature-primary w-full text-sm py-3">
+                <span>Open the AI Adventure Planner</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
           </div>
         </div>
       </section>
 
       {/* 3. Featured Outdoor Challenges */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-4">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-[#2D5A27] uppercase tracking-wider mb-1">
-              <Target className="w-4 h-4" /> Real-World Missions
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1C2818]">Featured Nature Challenges</h2>
+            <span className="eyebrow">
+              <Target /> Real-world missions
+            </span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#1E2A1A]">
+              Featured Nature Challenges
+            </h2>
           </div>
-          <Link to="/missions" className="text-xs font-bold text-[#2D5A27] hover:underline flex items-center gap-1">
-            <span>View All Missions ({INITIAL_MISSIONS.length})</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+          <Link to="/missions" className="btn-nature-quiet text-sm shrink-0">
+            <span>View all missions ({INITIAL_MISSIONS.length})</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {INITIAL_MISSIONS.slice(0, 4).map((mission) => (
-            <div key={mission.id} className="nature-card p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="nature-badge text-[11px]">{mission.category}</span>
-                  <span className="text-[11px] font-semibold text-stone-500">{mission.estimatedTime}</span>
+        <div className="grid sm:grid-cols-2 gap-x-12 gap-y-2">
+          {INITIAL_MISSIONS.slice(0, 4).map((mission, i) => (
+            <Link
+              key={mission.id}
+              to="/missions"
+              className="group block border-t border-[#1E2A1A]/10 pt-6 pb-7 pr-2"
+            >
+              <div className="flex gap-5">
+                <span className="font-display text-3xl font-bold leading-none text-[#C3CDB8] tabular-nums w-10 shrink-0 mt-0.5">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className="space-y-2.5">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-semibold text-[#7C8377]">
+                    <span className="uppercase tracking-wider text-[#2D5A27]">{mission.category}</span>
+                    <span>·</span>
+                    <span>{mission.estimatedTime}</span>
+                    <span>·</span>
+                    <span>{mission.difficulty}</span>
+                  </div>
+                  <h3 className="font-bold text-[17px] text-[#1E2A1A] group-hover:text-[#2D5A27] transition-colors">
+                    {mission.title}
+                  </h3>
+                  <p className="text-sm text-[#4C5249] leading-relaxed line-clamp-2">
+                    {mission.description}
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#2D5A27] opacity-0 -translate-x-1.5 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+                    Start this challenge <ArrowRight className="w-4 h-4" />
+                  </span>
                 </div>
-                <h3 className="font-bold text-base text-[#1C2818] mb-2">{mission.title}</h3>
-                <p className="text-xs text-stone-600 line-clamp-3 leading-relaxed mb-4">
-                  {mission.description}
-                </p>
               </div>
-
-              <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#2D5A27]">{mission.difficulty}</span>
-                <Link to="/missions" className="text-xs font-bold text-[#2D5A27] hover:underline">
-                  Start Challenge &rarr;
-                </Link>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* 4. How the Platform Works */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#1D3B19] text-white rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white">How Touch Grass Works</h2>
-            <p className="text-xs sm:text-sm text-emerald-200">
-              Our core principle: Plan on the screen. Experience it in the real world.
-            </p>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="bg-[#1D3B19] rounded-[1.75rem] px-6 sm:px-10 lg:px-14 py-12 sm:py-16 text-white overflow-hidden">
+          <div className="max-w-2xl">
+            <span className="eyebrow eyebrow-dark">Field manual</span>
+            <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+              Plan on the screen.
+              <br />
+              <span className="text-[#A3C391]">Experience it in the real world.</span>
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-            
-            <div className="bg-emerald-900/60 p-6 rounded-2xl border border-emerald-700/50 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center font-extrabold text-lg text-emerald-200">
-                1
+          <div className="mt-12 grid md:grid-cols-3 gap-x-10 gap-y-3">
+            {steps.map((step, i) => (
+              <div
+                key={step.title}
+                className={`${i > 0 ? 'border-t md:border-t-0 md:border-l border-emerald-900/70 md:pl-10 pt-8 md:pt-0' : ''}`}
+              >
+                <span className="font-display text-xs font-bold tracking-[0.22em] text-[#E8A87C]">
+                  STEP 0{i + 1}
+                </span>
+                <h3 className="mt-3 text-lg font-bold text-white">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-emerald-100/85">{step.copy}</p>
               </div>
-              <h3 className="text-lg font-bold text-white">Plan Your Adventure</h3>
-              <p className="text-xs text-emerald-100 leading-relaxed">
-                Use open-source AI or curated presets to generate a personalized micro-mission tailored to your time, location, and accessibility requirements.
-              </p>
-            </div>
-
-            <div className="bg-emerald-900/60 p-6 rounded-2xl border border-emerald-700/50 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center font-extrabold text-lg text-emerald-200">
-                2
-              </div>
-              <h3 className="text-lg font-bold text-white">Print & Unplug</h3>
-              <p className="text-xs text-emerald-100 leading-relaxed">
-                Print or download your mission card. Leave your phone inside or in airplane mode, step out the door, and immerse yourself in real nature.
-              </p>
-            </div>
-
-            <div className="bg-emerald-900/60 p-6 rounded-2xl border border-emerald-700/50 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-700 flex items-center justify-center font-extrabold text-lg text-emerald-200">
-                3
-              </div>
-              <h3 className="text-lg font-bold text-white">Log in Your Journal</h3>
-              <p className="text-xs text-emerald-100 leading-relaxed">
-                Return feeling refreshed, mark your mission complete, and save your notes and discoveries locally in your private nature journal.
-              </p>
-            </div>
-
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 5. Open-Source AI and Privacy Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#2D5A27]/20 shadow-lg space-y-8">
-          <div className="max-w-3xl space-y-2">
-            <div className="inline-flex items-center gap-1.5 bg-[#E4ECE2] text-[#1D3B19] text-xs font-bold px-3 py-1 rounded-full">
-              <Cpu className="w-4 h-4 text-[#2D5A27]" />
-              <span>Open Innovation Manifesto</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1C2818]">
-              Why Open-Source AI Matters for Outdoor Exploration
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              We believe AI should help you spend less time on screens, not trap you in a engagement loop. Here is how our architecture respects your privacy and autonomy:
-            </p>
-          </div>
+      {/* 5. Open-Source AI & Privacy */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-2xl mb-10">
+          <span className="eyebrow">
+            <Cpu /> Open innovation
+          </span>
+          <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-[#1E2A1A]">
+            Why open-source AI matters outdoors
+          </h2>
+          <p className="prose-nature mt-4">
+            AI should help you spend <em>less</em> time on screens, not trap you in an engagement loop.
+            The architecture here respects your privacy and autonomy by design.
+          </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div className="p-5 bg-[#FAF6EE] rounded-2xl border border-stone-200 space-y-2">
-              <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl w-fit font-bold text-xs flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4" /> 100% Local Privacy
+        <div className="grid sm:grid-cols-3 gap-x-10 gap-y-9">
+          {principles.map((p) => (
+            <div key={p.title} className="border-t-2 border-[#2D5A27] pt-5">
+              <div className="w-9 h-9 rounded-lg bg-white border border-[#1E2A1A]/10 flex items-center justify-center text-[#2D5A27]">
+                <p.icon className="w-4.5 h-4.5" />
               </div>
-              <h3 className="font-bold text-base text-stone-900">Your Data Stays on Device</h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Journal entries, outdoor stats, and saved plans are stored locally in your browser storage. We never collect or sell your personal activity.
-              </p>
+              <h3 className="mt-4 font-bold text-[17px] text-[#1E2A1A]">{p.title}</h3>
+              <p className="mt-2 text-sm text-[#4C5249] leading-relaxed">{p.copy}</p>
             </div>
-
-            <div className="p-5 bg-[#FAF6EE] rounded-2xl border border-stone-200 space-y-2">
-              <div className="p-2 bg-sky-100 text-sky-800 rounded-xl w-fit font-bold text-xs flex items-center gap-1.5">
-                <Cpu className="w-4 h-4" /> Transparent Inference
-              </div>
-              <h3 className="font-bold text-base text-stone-900">Always Know the Engine</h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Every response displays a disclosure badge showing whether it came from local Ollama, an open API, or the offline rule fallback.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAF6EE] rounded-2xl border border-stone-200 space-y-2">
-              <div className="p-2 bg-amber-100 text-amber-800 rounded-xl w-fit font-bold text-xs flex items-center gap-1.5">
-                <WifiOff className="w-4 h-4" /> Offline Resilience
-              </div>
-              <h3 className="font-bold text-base text-stone-900">Works Without Internet</h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Basic nature missions, saved adventures, and nature journal entries remain accessible offline without requiring an active server connection.
-              </p>
-            </div>
-
-          </div>
+          ))}
         </div>
       </section>
 
       {/* 6. Nature Journal Preview */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="nature-card p-8 bg-gradient-to-r from-[#FAF6EE] to-white border border-[#2D5A27]/20 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-3 max-w-xl">
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-[#2D5A27] uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" /> Personal Nature Journal
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1C2818]">
-              Record your observations & discoveries locally.
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="nature-panel overflow-hidden grid md:grid-cols-2">
+          <div className="p-8 sm:p-12 flex flex-col gap-5 border-b md:border-b-0 md:border-r border-[#1E2A1A]/10">
+            <span className="eyebrow">
+              <BookOpen /> Personal nature journal
+            </span>
+            <h2 className="text-2xl sm:text-[1.75rem] font-bold leading-snug text-[#1E2A1A]">
+              Record observations &amp; discoveries — on your device only.
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              Log leaf shapes, bird calls, mood improvements, and weather notes. Export your observations as JSON anytime or review your streak history.
+            <p className="prose-nature">
+              Log leaf shapes, bird calls, weather, and mood. Your list, your streaks, your photos —
+              everything stays in your browser and can be exported as JSON at any time.
             </p>
-            <div className="pt-2">
-              <Link to="/journal" className="btn-nature-primary py-2.5 px-5 text-xs">
+            <div className="mt-auto pt-2">
+              <Link to="/journal" className="btn-nature-primary py-2.5 px-5 text-sm">
                 <span>Open My Nature Journal</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          <div className="w-full md:w-80 bg-white p-4 rounded-2xl border border-stone-200 shadow-md font-body text-xs space-y-2">
-            <div className="flex items-center justify-between text-stone-500 font-semibold text-[11px]">
-              <span>Sample Journal Entry</span>
-              <span>2 days ago</span>
-            </div>
-            <h4 className="font-bold text-sm text-[#1C2818]">Morning Oak Grove Walk</h4>
-            <p className="text-stone-600 text-[11px] leading-relaxed line-clamp-3">
-              Observed a pair of Northern Cardinals nesting in an oak canopy. Collected 4 distinct fallen leaf specimens. Head feels clear and grounded!
-            </p>
-            <div className="pt-2 flex items-center justify-between text-[11px] border-t border-stone-100">
-              <span className="text-emerald-800 font-bold">🌿 Peaceful</span>
-              <span className="text-stone-500">Pine Hill Reserve</span>
+          <div className="p-8 sm:p-12 bg-[#FAF6EE]/50 flex items-center">
+            <div className="relative bg-white border border-[#1E2A1A]/10 rounded-xl p-6 shadow-[var(--shadow-card)] w-full">
+              <span className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-sm bg-[#C05B33]/50" aria-hidden="true" />
+              <div className="flex items-center justify-between text-[11px] font-semibold text-[#7C8377]">
+                <span>Sample field note</span>
+                <span>2 days ago</span>
+              </div>
+              <h4 className="mt-3 font-bold text-[17px] text-[#1E2A1A]">Morning Oak Grove Walk</h4>
+              <p className="mt-2 text-sm leading-relaxed text-[#4C5249] line-clamp-3">
+                Observed a pair of Northern Cardinals nesting in an oak canopy. Collected 4 distinct
+                fallen leaf specimens. Head feels clear and grounded!
+              </p>
+              <div className="mt-4 pt-3 border-t border-[#1E2A1A]/10 flex items-center justify-between text-[11px]">
+                <span className="font-bold text-[#2D5A27]">Mood &#183; Peaceful</span>
+                <span className="text-[#7C8377]">Pine Hill Reserve</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* 7. Final Call to Action */}
-      <section className="max-w-4xl mx-auto px-4 text-center space-y-6 pt-4">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1C2818]">
-          Ready to disconnect and touch grass?
-        </h2>
-        <p className="text-stone-600 text-sm max-w-xl mx-auto">
-          Start your first 15-minute nature mission right now. No account required, 100% free and open-source.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link to="/planner" className="btn-nature-primary text-sm py-3 px-6">
-            <Sparkles className="w-4 h-4 text-emerald-300" />
-            <span>Generate First Adventure</span>
-          </Link>
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-8 text-center">
+        <div className="border-t-2 border-[#2D5A27] pt-10 sm:pt-12">
+          <span className="eyebrow-pill mx-auto">
+            <Leaf className="text-[#2D5A27]" /> Start outdoors
+          </span>
+          <h2 className="mt-5 text-3xl sm:text-4xl font-bold text-[#1E2A1A]">
+            Ready to disconnect and touch grass?
+          </h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-[#4C5249]">
+            Start your first 15-minute nature mission right now — no account, no cost, no lock-in.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <Link to="/planner" className="btn-nature-primary text-sm py-3 px-6">
+              <Sparkles className="w-4 h-4 text-emerald-300" />
+              <span>Generate First Adventure</span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -352,7 +365,6 @@ export default function LandingPage({ onOpenNatureGuide }) {
           onClose={() => setIsPrintModalOpen(false)}
         />
       )}
-
     </div>
   );
 }

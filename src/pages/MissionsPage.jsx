@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { Target, Search, Filter, CheckCircle2, Sparkles, Clock, Leaf, ShieldAlert, Footprints, Award, RefreshCw } from 'lucide-react';
+import { Target, Search, CheckCircle2, Award, Clock, Leaf } from 'lucide-react';
 import { INITIAL_MISSIONS } from '../data/initialMissions';
 import { getCompletedMissions, toggleMissionCompletion } from '../services/storageService';
 
@@ -23,7 +23,6 @@ export default function MissionsPage() {
     setCompletedList(updated);
 
     if (isNowCompleted) {
-      // Fire celebration confetti!
       confetti({
         particleCount: 60,
         spread: 60,
@@ -42,94 +41,120 @@ export default function MissionsPage() {
     return matchesSearch && matchesCat && matchesDiff;
   });
 
-  const dailyChallenge = INITIAL_MISSIONS[0]; // Highlighted Daily Mission
+  const dailyChallenge = INITIAL_MISSIONS[0];
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('All');
+    setSelectedDifficulty('All');
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-body text-[#1C2818]">
-      
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-14 space-y-10 font-body text-[#1E2A1A]">
+
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 bg-[#E4ECE2] text-[#1D3B19] text-xs font-bold px-3 py-1 rounded-full">
-            <Target className="w-4 h-4 text-[#2D5A27]" />
-            <span>Feature C: Nature Missions & Challenges</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1C2818]">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="max-w-2xl">
+          <span className="eyebrow">
+            <Target /> Nature missions &amp; challenges
+          </span>
+          <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">
             Real-World Outdoor Missions
           </h1>
-          <p className="text-stone-600 text-sm max-w-2xl">
-            Choose a challenge, leave your phone inside, and complete it in nature. Mark completion manually to build your exploration streak!
+          <p className="lede mt-4">
+            Pick a challenge, leave your phone inside, and complete it in nature. Mark completion
+            manually to build your exploration streak.
           </p>
         </div>
 
-        {/* Progress Box */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex items-center gap-4 shrink-0">
-          <div className="w-12 h-12 rounded-xl bg-emerald-100 text-[#2D5A27] flex items-center justify-center font-extrabold text-lg">
+        <div className="nature-panel px-5 py-4 flex items-center gap-4 shrink-0">
+          <div className="w-11 h-11 rounded-lg bg-[#E9F0E4] text-[#2D5A27] flex items-center justify-center font-display font-bold text-lg">
             {completedList.length}
           </div>
           <div>
-            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider block">Missions Completed</span>
-            <span className="text-lg font-bold text-[#1C2818]">{completedList.length} of {INITIAL_MISSIONS.length} Done</span>
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-[#7C8377]">
+              Missions completed
+            </span>
+            <span className="text-base font-bold text-[#1E2A1A]">
+              {completedList.length} of {INITIAL_MISSIONS.length} done
+            </span>
           </div>
         </div>
       </div>
 
       {/* Daily Challenge Banner */}
-      <div className="bg-gradient-to-r from-[#2D5A27] to-[#1D3B19] text-white p-6 sm:p-8 rounded-3xl shadow-xl space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 bg-emerald-700/80 text-emerald-200 text-xs font-bold px-3 py-1 rounded-full">
-            <Award className="w-4 h-4 text-emerald-300" />
-            <span>Daily Featured Challenge</span>
+      <div className="bg-[#1D3B19] rounded-[1.5rem] px-6 sm:px-10 py-9 sm:py-11 text-white">
+        <div className="max-w-3xl">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="eyebrow eyebrow-dark">
+              <Award /> Daily featured challenge
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-200/90">
+              <Clock className="w-3.5 h-3.5" />
+              {dailyChallenge.estimatedTime}
+            </span>
           </div>
-          <span className="text-xs text-emerald-200 font-semibold">⏱️ {dailyChallenge.estimatedTime}</span>
-        </div>
 
-        <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-white">{dailyChallenge.title}</h2>
-          <p className="text-xs sm:text-sm text-emerald-100 max-w-3xl leading-relaxed">
+          <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-white">{dailyChallenge.title}</h2>
+          <p className="mt-3 text-sm leading-relaxed text-emerald-100/85">
             {dailyChallenge.description}
           </p>
-        </div>
 
-        <div className="pt-2 flex items-center justify-between">
-          <button
-            onClick={() => handleToggle(dailyChallenge)}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
-              isCompleted(dailyChallenge.id)
-                ? 'bg-emerald-100 text-emerald-950 shadow-inner'
-                : 'bg-white text-[#2D5A27] hover:bg-emerald-50 shadow-md'
-            }`}
-          >
-            <CheckCircle2 className={`w-4 h-4 ${isCompleted(dailyChallenge.id) ? 'text-emerald-700' : 'text-[#2D5A27]'}`} />
-            <span>{isCompleted(dailyChallenge.id) ? 'Daily Mission Completed! 🎉' : 'Mark Daily Mission Completed'}</span>
-          </button>
+          <div className="mt-7">
+            <button
+              onClick={() => handleToggle(dailyChallenge)}
+              className={`px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-colors ${
+                isCompleted(dailyChallenge.id)
+                  ? 'bg-emerald-100 text-emerald-950'
+                  : 'bg-white text-[#2D5A27] hover:bg-emerald-50'
+              }`}
+            >
+              <CheckCircle2 className={`w-4 h-4 ${isCompleted(dailyChallenge.id) ? 'text-emerald-700' : 'text-[#2D5A27]'}`} />
+              <span>{isCompleted(dailyChallenge.id) ? 'Daily Mission Completed!' : 'Mark Daily Mission Completed'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm space-y-4">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+      <div className="nature-panel px-4 sm:px-5 py-4 space-y-4">
+        <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+          <div className="relative w-full lg:w-80">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9AA093]" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search missions, leaves, birds..."
-              className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-300 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-[#2D5A27]"
+              className="nature-input pl-10"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+          <div className="flex flex-wrap items-center gap-2 text-[13px] font-semibold text-[#7C8377]">
+            <span>
+              {filteredMissions.length === 0
+                ? 'Nothing matches your filters'
+                : `${filteredMissions.length} ${filteredMissions.length === 1 ? 'mission' : 'missions'}`}
+            </span>
+            {(selectedCategory !== 'All' || selectedDifficulty !== 'All' || searchTerm) && (
+              <button onClick={resetFilters} className="text-[#2D5A27] underline underline-offset-3 hover:text-[#1D3B19]">
+                Clear filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="w-full lg:w-auto lg:mr-1 text-[11px] font-bold uppercase tracking-wider text-[#7C8377]">Category</span>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                   selectedCategory === cat
-                    ? 'bg-[#2D5A27] text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                    ? 'bg-[#2D5A27] text-white'
+                    : 'bg-[#EDE9DE] text-[#4C5249] hover:bg-[#E4E0D4]'
                 }`}
               >
                 {cat}
@@ -137,81 +162,106 @@ export default function MissionsPage() {
             ))}
           </div>
 
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="w-full lg:w-auto lg:mr-1 text-[11px] font-bold uppercase tracking-wider text-[#7C8377]">Difficulty</span>
+            {difficulties.map((diff) => (
+              <button
+                key={diff}
+                onClick={() => setSelectedDifficulty(diff)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  selectedDifficulty === diff
+                    ? 'bg-[#2D5A27] text-white'
+                    : 'bg-[#EDE9DE] text-[#4C5249] hover:bg-[#E4E0D4]'
+                }`}
+              >
+                {diff}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Grid of Missions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredMissions.map((mission) => {
-          const completed = isCompleted(mission.id);
-          return (
-            <div
-              key={mission.id}
-              className={`nature-card p-6 flex flex-col justify-between space-y-4 border transition-all ${
-                completed ? 'bg-emerald-50/40 border-emerald-300/80 shadow-xs' : 'bg-white border-stone-200'
-              }`}
-            >
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="nature-badge text-[11px]">{mission.category}</span>
-                  <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2.5 py-0.5 rounded-md">
-                    ⏱️ {mission.estimatedTime}
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-lg font-bold text-[#1C2818] leading-snug">{mission.title}</h3>
-                  <span className="text-xs font-bold text-[#2D5A27] bg-[#E4ECE2] px-2 py-0.5 rounded-md shrink-0">
-                    {mission.difficulty}
-                  </span>
-                </div>
-
-                <p className="text-xs text-stone-600 leading-relaxed">{mission.description}</p>
-
-                {/* Instructions */}
-                <div className="bg-[#FAF6EE] p-3.5 rounded-xl border border-stone-200 text-xs space-y-1.5">
-                  <span className="font-bold text-[#1D3B19] block text-[11px]">📋 Step-by-Step Instructions:</span>
-                  <ol className="list-decimal pl-4 text-stone-700 space-y-1 text-[11px]">
-                    {mission.instructions.map((inst, idx) => (
-                      <li key={idx}>{inst}</li>
-                    ))}
-                  </ol>
-                </div>
-
-                {/* Environmental Tip */}
-                {mission.environmentalTip && (
-                  <div className="p-2.5 bg-emerald-100/60 rounded-lg text-[11px] text-emerald-900 flex items-start gap-1.5">
-                    <Leaf className="w-3.5 h-3.5 text-[#2D5A27] shrink-0 mt-0.5" />
-                    <span><strong>Eco Tip:</strong> {mission.environmentalTip}</span>
+      {filteredMissions.length === 0 ? (
+        <div className="nature-panel text-center py-14 px-8 space-y-3">
+          <Target className="w-9 h-9 text-[#B5BCAA] mx-auto" />
+          <h3 className="font-bold text-lg text-[#1E2A1A]">No missions match your filters</h3>
+          <p className="text-sm text-[#7C8377]">Try broadening the category or clearing the search.</p>
+          <button onClick={resetFilters} className="btn-nature-secondary text-sm py-2 px-5 mt-2">
+            Reset Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredMissions.map((mission) => {
+            const completed = isCompleted(mission.id);
+            return (
+              <div
+                key={mission.id}
+                className={`nature-card p-6 flex flex-col ${
+                  completed ? 'bg-[#F4F8F1] border-[#2D5A27]/30' : ''
+                }`}
+              >
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="nature-badge">{mission.category}</span>
+                    <span className="text-xs font-bold text-[#7C8377] flex items-center gap-1 shrink-0">
+                      <Clock className="w-3.5 h-3.5 text-[#2D5A27]" />
+                      {mission.estimatedTime}
+                    </span>
                   </div>
-                )}
+
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-lg font-bold leading-snug text-[#1E2A1A]">{mission.title}</h3>
+                    <span className="text-[11px] font-bold text-[#2D5A27] bg-[#E9F0E4] px-2 py-0.5 rounded-md shrink-0">
+                      {mission.difficulty}
+                    </span>
+                  </div>
+
+                  <p className="text-sm leading-relaxed text-[#4C5249]">{mission.description}</p>
+
+                  <div className="bg-[#FAF6EE] p-4 rounded-xl border border-[#1E2A1A]/10">
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-[#1D3B19] block mb-2">
+                      Step-by-step
+                    </span>
+                    <ol className="space-y-1.5 text-[13px] leading-relaxed text-[#3A4038] list-decimal pl-4">
+                      {mission.instructions.map((inst, idx) => (
+                        <li key={idx}>{inst}</li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {mission.environmentalTip && (
+                    <div className="p-3 bg-[#E9F0E4]/70 rounded-lg text-[13px] leading-relaxed text-[#2C4D24] flex items-start gap-2">
+                      <Leaf className="w-4 h-4 text-[#2D5A27] shrink-0 mt-0.5" />
+                      <span><strong>Eco tip:</strong> {mission.environmentalTip}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-auto pt-4">
+                  <div className="pt-4 border-t border-[#1E2A1A]/10 flex items-center justify-between gap-3">
+                    <span className="text-[11px] text-[#7C8377] font-semibold">
+                      {completed ? 'Mission recorded' : 'Self-reported manual action'}
+                    </span>
+                    <button
+                      onClick={() => handleToggle(mission)}
+                      className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-colors ${
+                        completed
+                          ? 'bg-emerald-700 text-white'
+                          : 'btn-nature-primary py-2 px-4'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                      <span>{completed ? 'Completed' : 'Mark Completed'}</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-
-              {/* Completion Toggle */}
-              <div className="pt-3 border-t border-stone-200/80 flex items-center justify-between">
-                <span className="text-[11px] text-stone-500 font-semibold">
-                  {completed ? '✓ Mission Recorded' : 'Self-Reported Manual Action'}
-                </span>
-
-                <button
-                  onClick={() => handleToggle(mission)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                    completed
-                      ? 'bg-emerald-700 text-white shadow-sm'
-                      : 'btn-nature-primary'
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                  <span>{completed ? 'Completed ✓' : 'Mark Completed'}</span>
-                </button>
-              </div>
-
-            </div>
-          );
-        })}
-      </div>
-
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

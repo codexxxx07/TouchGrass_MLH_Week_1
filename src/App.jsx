@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-[#F8F6F0] text-[#1C2818] selection:bg-[#4E7C41] selection:text-white">
+      <div className="min-h-screen flex flex-col bg-[#F7F4EB] text-[#1E2A1A] selection:bg-[#4E7C41] selection:text-white">
         
         {/* Top Safety Banner */}
         <SafetyBanner />

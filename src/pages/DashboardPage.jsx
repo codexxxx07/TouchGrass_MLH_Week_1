@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, Award, Clock, Target, Flame, BookOpen, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { LayoutDashboard, Clock, Flame, Target, BookOpen, Sparkles, ArrowRight, ShieldCheck, CheckCircle2, Award } from 'lucide-react';
 import { getDashboardStats, getSavedAdventures, getJournalEntries } from '../services/storageService';
 import { INITIAL_ADVENTURES } from '../data/initialAdventures';
 
@@ -28,222 +28,227 @@ export default function DashboardPage() {
 
   const suggestedNext = INITIAL_ADVENTURES[0];
 
+  const tier = Math.floor(stats.missionsCompletedCount / 3) + 1;
+  const tierProgressPct = Math.round(((stats.missionsCompletedCount % 3) / 3) * 100);
+  const tierBarPct = Math.min(100, Math.max(10, tierProgressPct));
+
+  const statItems = [
+    {
+      label: 'Total time outside',
+      value: totalHours > 0 ? `${totalHours}h ${remainingMins}m` : `${remainingMins} mins`,
+      sub: 'Logged screen-free outdoors',
+      icon: Clock,
+      iconClass: 'bg-[#E9F0E4] text-[#2D5A27]'
+    },
+    {
+      label: 'Exploration streak',
+      value: `${stats.currentStreakDays} ${stats.currentStreakDays === 1 ? 'day' : 'days'}`,
+      sub: 'Active, self-reported streak',
+      icon: Flame,
+      iconClass: 'bg-[#F7E8CE] text-[#9C6B1F]'
+    },
+    {
+      label: 'Missions done',
+      value: stats.missionsCompletedCount,
+      sub: 'Real-world challenges completed',
+      icon: Target,
+      iconClass: 'bg-[#E3EFF5] text-[#2E6C8C]'
+    },
+    {
+      label: 'Journal discoveries',
+      value: stats.journalEntriesCount,
+      sub: 'Saved local observations',
+      icon: BookOpen,
+      iconClass: 'bg-[#E9F0E4] text-[#2D5A27]'
+    }
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 font-body text-[#1C2818]">
-      
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-14 space-y-10 font-body text-[#1E2A1A]">
+
       {/* Header */}
-      <div className="space-y-2">
-        <div className="inline-flex items-center gap-1.5 bg-[#E4ECE2] text-[#1D3B19] text-xs font-bold px-3 py-1 rounded-full">
-          <LayoutDashboard className="w-4 h-4 text-[#2D5A27]" />
-          <span>Feature E: Touch Grass Dashboard</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1C2818]">
+      <div className="max-w-2xl">
+        <span className="eyebrow">
+          <LayoutDashboard /> Touch grass dashboard
+        </span>
+        <h1 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">
           Your Outdoor Exploration Overview
         </h1>
-        <p className="text-stone-600 text-sm max-w-2xl">
-          Real statistics calculated directly from your logged adventures, nature missions, and private journal entries.
+        <p className="lede mt-4">
+          Real statistics calculated directly from your logged adventures, nature missions, and
+          private journal entries.
         </p>
       </div>
 
       {/* Self-Reported Stats Disclosure Notice */}
-      <div className="bg-[#FAF6EE] border border-[#2D5A27]/20 p-3.5 rounded-2xl flex items-center gap-3 text-xs text-[#1D3B19]">
-        <ShieldCheck className="w-5 h-5 text-[#2D5A27] shrink-0" />
-        <span>
-          <strong>Real-World Integrity Notice:</strong> All statistics below are calculated strictly from your self-reported real-world completed missions and local journal logs. No fake metrics or simulated user data.
+      <div className="bg-[#FAF6EE] border border-[#2D5A27]/20 rounded-xl px-4 py-3.5 flex items-start gap-3 text-[13px] leading-relaxed text-[#4C5249]">
+        <span className="p-1.5 rounded-lg bg-[#E9F0E4] text-[#2D5A27] shrink-0">
+          <ShieldCheck className="w-4 h-4" />
         </span>
+        <p>
+          <strong className="text-[#1D3B19]">Real-world integrity.</strong> All statistics below come
+          strictly from your self-reported completed missions and local journal logs — no fake metrics
+          or simulated data.
+        </p>
       </div>
 
-      {/* Stats Cards Grid (4 Col) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        {/* Stat 1: Outdoor Time */}
-        <div className="nature-card p-6 bg-gradient-to-br from-white to-[#E4ECE2]/40 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Total Time Outside</span>
-            <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl">
-              <Clock className="w-5 h-5" />
+      {/* Stats Panel */}
+      <div className="nature-panel overflow-hidden">
+        <div className="grid grid-cols-2 lg:grid-cols-4">
+          {statItems.map((item, i) => (
+            <div
+              key={item.label}
+              className={`p-6 sm:p-7 space-y-3 ${
+                i === 1
+                  ? 'border-l border-[#1E2A1A]/10'
+                  : i === 2
+                    ? 'border-t lg:border-t-0 lg:border-l border-[#1E2A1A]/10'
+                    : i === 3
+                      ? 'border-l border-t lg:border-t-0 border-[#1E2A1A]/10'
+                      : ''
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#7C8377]">
+                  {item.label}
+                </span>
+                <span className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${item.iconClass}`}>
+                  <item.icon className="w-4.5 h-4.5" />
+                </span>
+              </div>
+              <div className="font-display text-[1.75rem] leading-none font-bold tracking-tight text-[#1E2A1A]">
+                {item.value}
+              </div>
+              <div className="text-xs leading-snug text-[#7C8377]">{item.sub}</div>
             </div>
-          </div>
-          <div>
-            <span className="text-3xl font-extrabold text-[#1C2818]">
-              {totalHours > 0 ? `${totalHours}h ${remainingMins}m` : `${remainingMins} mins`}
-            </span>
-            <span className="text-xs text-stone-500 block mt-1">Logged screen-free outdoors</span>
-          </div>
+          ))}
         </div>
-
-        {/* Stat 2: Streak */}
-        <div className="nature-card p-6 bg-gradient-to-br from-white to-amber-50/50 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Exploration Streak</span>
-            <div className="p-2 bg-amber-100 text-amber-800 rounded-xl">
-              <Flame className="w-5 h-5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-3xl font-extrabold text-[#1C2818]">
-              {stats.currentStreakDays} {stats.currentStreakDays === 1 ? 'Day' : 'Days'}
-            </span>
-            <span className="text-xs text-amber-800 font-semibold block mt-1">Active Nature Streak 🔥</span>
-          </div>
-        </div>
-
-        {/* Stat 3: Missions Completed */}
-        <div className="nature-card p-6 bg-gradient-to-br from-white to-sky-50/50 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Missions Done</span>
-            <div className="p-2 bg-sky-100 text-sky-800 rounded-xl">
-              <Target className="w-5 h-5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-3xl font-extrabold text-[#1C2818]">{stats.missionsCompletedCount}</span>
-            <span className="text-xs text-stone-500 block mt-1">Real-world challenges completed</span>
-          </div>
-        </div>
-
-        {/* Stat 4: Journal Observations */}
-        <div className="nature-card p-6 bg-gradient-to-br from-white to-[#E4ECE2]/40 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Journal Discoveries</span>
-            <div className="p-2 bg-emerald-100 text-emerald-800 rounded-xl">
-              <BookOpen className="w-5 h-5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-3xl font-extrabold text-[#1C2818]">{stats.journalEntriesCount}</span>
-            <span className="text-xs text-stone-500 block mt-1">Saved local observations</span>
-          </div>
-        </div>
-
       </div>
 
-      {/* Progress Bars & Goal Tracking */}
+      {/* Progress & Goals */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left: Suggested Next Adventure + Saved Adventures (Col 7) */}
+
+        {/* Left: Suggested Next Adventure + Saved (Col 7) */}
         <div className="lg:col-span-7 space-y-6">
-          
-          {/* Suggested Next Adventure */}
-          <div className="nature-card p-6 bg-gradient-to-r from-[#FAF6EE] to-white border border-[#2D5A27]/20 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1 bg-[#E4ECE2] text-[#1D3B19] text-xs font-bold px-3 py-1 rounded-full">
-                <Sparkles className="w-3.5 h-3.5 text-[#2D5A27]" />
-                <span>Suggested Next Adventure</span>
-              </span>
-              <span className="text-xs text-stone-500 font-semibold">⏱️ {suggestedNext.duration}</span>
-            </div>
 
-            <div>
-              <h3 className="text-xl font-bold text-[#1C2818]">{suggestedNext.title}</h3>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed">{suggestedNext.shortDescription}</p>
+          <div className="nature-panel p-6 sm:p-7">
+            <span className="eyebrow">
+              <Sparkles /> Suggested next adventure
+            </span>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="nature-badge">{suggestedNext.duration}</span>
+              <span className="nature-badge">{suggestedNext.difficulty}</span>
             </div>
-
-            <div className="pt-2 flex items-center justify-between">
-              <Link to="/planner" className="btn-nature-primary text-xs py-2 px-4">
-                <span>Start This Adventure &rarr;</span>
+            <h3 className="mt-3 text-xl font-bold text-[#1E2A1A]">{suggestedNext.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-[#4C5249]">
+              {suggestedNext.shortDescription}
+            </p>
+            <div className="mt-5">
+              <Link to="/planner" className="btn-nature-primary text-sm py-2.5 px-5">
+                <span>Start This Adventure</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          {/* Saved Adventures History */}
-          <div className="nature-card p-6 bg-white border border-stone-200 space-y-4">
-            <h3 className="text-lg font-bold text-[#1C2818] flex items-center justify-between">
-              <span>Saved & Completed Adventures</span>
-              <Link to="/planner" className="text-xs font-bold text-[#2D5A27] hover:underline">
+          <div className="nature-panel p-6 sm:p-7">
+            <div className="flex items-center justify-between pb-4 border-b border-[#1E2A1A]/10">
+              <h3 className="text-base font-bold text-[#1E2A1A]">Saved &amp; completed adventures</h3>
+              <Link to="/planner" className="btn-nature-quiet text-[13px]">
                 + Create New
               </Link>
-            </h3>
+            </div>
 
             {savedAdventures.length === 0 ? (
-              <p className="text-xs text-stone-500 italic py-4 text-center">
-                No saved adventures yet. Use the AI Planner to generate and save your first plan!
+              <p className="text-sm text-[#7C8377] italic py-6 text-center">
+                No saved adventures yet. Use the AI Planner to generate and save your first plan.
               </p>
             ) : (
-              <div className="space-y-3">
+              <ul className="divide-y divide-[#1E2A1A]/8">
                 {savedAdventures.slice(0, 4).map((adv) => (
-                  <div key={adv.id} className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-sm text-[#1C2818]">{adv.title}</h4>
-                      <span className="text-[11px] text-stone-500">{adv.estimatedDuration || adv.duration} • {adv.difficulty}</span>
+                  <li key={adv.id} className="py-3.5 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-sm text-[#1E2A1A] truncate">{adv.title}</h4>
+                      <span className="text-xs text-[#7C8377]">
+                        {adv.estimatedDuration || adv.duration} &#183; {adv.difficulty}
+                      </span>
                     </div>
                     {adv.completed ? (
-                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <span className="text-xs font-bold text-emerald-900 bg-[#E9F0E4] px-2.5 py-1 rounded-full flex items-center gap-1.5 shrink-0">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" /> Completed
                       </span>
                     ) : (
-                      <Link to="/planner" className="text-xs font-bold text-[#2D5A27] hover:underline">
+                      <Link to="/planner" className="btn-nature-quiet text-[13px] shrink-0">
                         View Plan
                       </Link>
                     )}
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
 
         </div>
 
-        {/* Right: Recent Journal Entries & Badges (Col 5) */}
+        {/* Right: Tier + Recent Journal (Col 5) */}
         <div className="lg:col-span-5 space-y-6">
-          
-          {/* Level Progress */}
-          <div className="nature-card p-6 bg-white border border-stone-200 space-y-4">
-            <h3 className="text-base font-bold text-[#1C2818] flex items-center justify-between">
-              <span>Outdoor Explorer Tier</span>
-              <span className="text-xs font-bold text-[#2D5A27] bg-[#E4ECE2] px-2.5 py-0.5 rounded-full">
-                Tier {Math.floor(stats.missionsCompletedCount / 3) + 1}
-              </span>
-            </h3>
 
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs text-stone-600 font-semibold">
-                <span>Progress to Next Tier</span>
-                <span>{(stats.missionsCompletedCount % 3) * 33.3}%</span>
+          <div className="nature-panel p-6 sm:p-7">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-base font-bold text-[#1E2A1A]">Outdoor explorer tier</h3>
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2D5A27] bg-[#E9F0E4] px-2.5 py-1 rounded-full">
+                <Award className="w-3.5 h-3.5" /> Tier {tier}
+              </span>
+            </div>
+
+            <div className="mt-5 space-y-1.5">
+              <div className="flex justify-between text-xs font-semibold text-[#7C8377]">
+                <span>Progress to next tier</span>
+                <span>{tierProgressPct}%</span>
               </div>
-              <div className="w-full h-3 bg-stone-100 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-[#E7E3D8] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-[#2D5A27] to-[#4E7C41] transition-all duration-500"
-                  style={{ width: `${Math.min(100, Math.max(10, ((stats.missionsCompletedCount % 3) / 3) * 100))}%` }}
+                  className="h-full bg-[#2D5A27] transition-all duration-500"
+                  style={{ width: `${tierBarPct}%` }}
                 />
               </div>
             </div>
 
-            <p className="text-[11px] text-stone-500 leading-snug">
-              Complete 3 nature missions to advance your real-world exploration tier!
+            <p className="mt-3 text-xs leading-snug text-[#7C8377]">
+              Complete 3 nature missions to advance your real-world exploration tier.
             </p>
           </div>
 
-          {/* Recent Journal Snippets */}
-          <div className="nature-card p-6 bg-white border border-stone-200 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-[#1C2818]">Recent Journal Discoveries</h3>
-              <Link to="/journal" className="text-xs font-bold text-[#2D5A27] hover:underline">
+          <div className="nature-panel p-6 sm:p-7">
+            <div className="flex items-center justify-between pb-4 border-b border-[#1E2A1A]/10">
+              <h3 className="text-base font-bold text-[#1E2A1A]">Recent journal discoveries</h3>
+              <Link to="/journal" className="btn-nature-quiet text-[13px]">
                 View All
               </Link>
             </div>
 
             {journalEntries.length === 0 ? (
-              <p className="text-xs text-stone-500 italic py-3">No observations recorded yet.</p>
+              <p className="text-sm text-[#7C8377] italic py-6 text-center">
+                No observations recorded yet.
+              </p>
             ) : (
-              <div className="space-y-3">
+              <ul className="divide-y divide-[#1E2A1A]/8">
                 {journalEntries.slice(0, 3).map((entry) => (
-                  <div key={entry.id} className="p-3 bg-[#FAF6EE] rounded-xl border border-stone-200 space-y-1 text-xs">
-                    <div className="flex justify-between text-[11px] font-bold text-[#1D3B19]">
-                      <span>{entry.title}</span>
-                      <span className="text-stone-400">{entry.date}</span>
+                  <li key={entry.id} className="py-3.5 space-y-1">
+                    <div className="flex justify-between gap-3 text-[13px] font-bold text-[#1D3B19]">
+                      <span className="truncate">{entry.title}</span>
+                      <span className="text-xs font-semibold text-[#9AA093] shrink-0">{entry.date}</span>
                     </div>
-                    <p className="text-[#333] text-[11px] line-clamp-2">{entry.notes}</p>
-                  </div>
+                    <p className="text-[13px] text-[#4C5249] line-clamp-2 leading-relaxed">{entry.notes}</p>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
 
         </div>
 
       </div>
-
     </div>
   );
 }
